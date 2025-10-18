@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./Auth.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -43,32 +45,72 @@ const Login = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Email:</label><br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <div className="auth-logo">
+            💧
+          </div>
+          <h1 className="auth-title">Welcome Back</h1>
+          <p className="auth-subtitle">Sign in to your iqembulamanzi account</p>
         </div>
-        <div>
-          <label>Password:</label><br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+
+        <form className="auth-form" onSubmit={handleLogin}>
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input
+              type="email"
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="auth-message error">
+              {error}
+            </div>
+          )}
+
+          <button 
+            type="submit" 
+            className="auth-button" 
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="loading-spinner"></span>
+                Signing In...
+              </>
+            ) : (
+              'Sign In'
+            )}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          <p>
+            Don't have an account?{" "}
+            <Link to="/register" className="auth-link">
+              Create Account
+            </Link>
+          </p>
         </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" style={{ marginTop: "10px" }} disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

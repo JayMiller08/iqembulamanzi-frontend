@@ -8,7 +8,9 @@ const Register = () => {
     phone: "",
     password: "",
     address: "",
-    role: "Citizen",
+    role: "Guardian",
+    lat: "",
+    lng: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,13 +23,41 @@ const Register = () => {
     });
   };
 
+  const handleLocationClick = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setFormData({
+            ...formData,
+            lat: position.coords.latitude.toString(),
+            lng: position.coords.longitude.toString()
+          });
+        },
+        (error) => {
+          setError("Unable to get location. Please enter coordinates manually.");
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess("");
 
+    // Validate required fields
+    if (!formData.lat || !formData.lng) {
+      setError("Please provide location coordinates (click 'Get My Location' or enter manually)");
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log('Submitting registration data:', formData);
+      
       const res = await fetch('/submit', {
         method: "POST",
         headers: {
@@ -36,7 +66,9 @@ const Register = () => {
         body: JSON.stringify(formData),
       });
 
+      console.log('Registration response status:', res.status);
       const data = await res.json();
+      console.log('Registration response data:', data);
 
       if (!res.ok) {
         setError(data.message || "Registration failed");
@@ -47,7 +79,8 @@ const Register = () => {
         }, 1500);
       }
     } catch (err) {
-      setError("Server error. Please try again later.");
+      console.error('Registration error:', err);
+      setError("Server error. Please check if the backend is running and try again.");
     } finally {
       setLoading(false);
     }
@@ -120,10 +153,36 @@ const Register = () => {
         <div>
           <label>Role:</label><br />
           <select name="role" value={formData.role} onChange={handleChange}>
-            <option value="Citizen">Citizen</option>
+            <option value="Guardian">Guardian</option>
             <option value="Manager">Manager</option>
             <option value="Admin">Admin</option>
           </select>
+        </div>
+        <div>
+          <label>Location:</label><br />
+          <button type="button" onClick={handleLocationClick} style={{ marginBottom: "10px" }}>
+            Get My Location
+          </button><br />
+          <input
+            type="number"
+            step="any"
+            name="lat"
+            placeholder="Latitude"
+            value={formData.lat}
+            onChange={handleChange}
+            required
+            style={{ width: "45%", marginRight: "5%" }}
+          />
+          <input
+            type="number"
+            step="any"
+            name="lng"
+            placeholder="Longitude"
+            value={formData.lng}
+            onChange={handleChange}
+            required
+            style={{ width: "45%" }}
+          />
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
         {success && <p style={{ color: "green" }}>{success}</p>}

@@ -11,6 +11,12 @@ const Admin = () => {
   // Fetch users from backend
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!token) {
+        setError("Please login to access this page");
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch('/users', {
           headers: { Authorization: `Bearer ${token}` },

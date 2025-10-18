@@ -32,7 +32,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         // redirect or update UI after login
-        window.location.href = "/home";
+        window.location.href = "/";
       }
     } catch (err) {
       console.error('Login fetch error:', err);
